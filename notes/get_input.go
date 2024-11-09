@@ -10,6 +10,7 @@ import (
 func getInput(prompt string, expected []string) string {
 	reader := bufio.NewReader(os.Stdin)
 
+	//test comment
 	if len(expected) == 0 {
 		fmt.Printf("%v", prompt)
 		text, err := reader.ReadString('\n')
