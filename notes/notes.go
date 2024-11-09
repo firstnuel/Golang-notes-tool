@@ -56,7 +56,7 @@ func (n *Notes) ShowNotes() {
 		fmt.Println("No notes to show, Add note")
 		return
 	}
-	fmt.Println()
+	fmt.Println("\nNotes:")
 	for key, value := range n.NoteMap {
 		fmt.Printf("%v - %v\n", key, value)
 	}
