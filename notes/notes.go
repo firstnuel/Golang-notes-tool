@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/fatih/color"
 )
 
 type Notes struct {
@@ -25,35 +27,42 @@ func (n *Notes) AddNote() *Notes {
 	i := len(n.NoteMap)
 	key := fmt.Sprintf("%03d", i+1)
 	n.NoteMap[key] = note
-	fmt.Println("Note added successfully!")
+	color.Green("Note added successfully!")
 	return n
 }
 
 func (n *Notes) DeleteNote() *Notes {
-	index := getInput("\nEnter the index text (00X): ", []string{})
+	yellow := color.New(color.FgYellow).SprintFunc()
+	red := color.New(color.FgRed).SprintFunc()
+
+	index := getInput(red("\nEnter the number of note to remove or 0 to cancel: "), []string{})
+	fmt.Println(yellow("Delete operation cancelled"))
+	if index == "0" {
+		return n
+	}
 
 	i := len(n.NoteMap)
 	idx, err := strconv.Atoi(index)
 
 	if err != nil {
-		fmt.Println("Problem with index!")
+		color.Red("Problem with index!")
 		return n
 	}
 	if idx > i {
-		fmt.Println("Note not found!")
+		color.Red("Note not found!")
 		return n
 	}
 
 	key := fmt.Sprintf("%03d", idx)
 	delete(n.NoteMap, key)
-	fmt.Println("Note deleted successfully!")
+	color.Green("Note deleted successfully!")
 	return n
 }
 
 func (n *Notes) ShowNotes() {
 
 	if len(n.NoteMap) == 0 {
-		fmt.Println("No notes to show, Add note")
+		color.Yellow("No notes to show, Add note")
 		return
 	}
 	fmt.Println("\nNotes:")
@@ -63,6 +72,8 @@ func (n *Notes) ShowNotes() {
 }
 
 func (n *Notes) WriteToFile() error {
+	yellow := color.New(color.FgYellow).SprintFunc()
+
 	filename := n.Collection + ".txt"
 	file, err := os.Create(filename)
 	if err != nil {
@@ -70,8 +81,9 @@ func (n *Notes) WriteToFile() error {
 	}
 	defer file.Close()
 
+	keyword := getInput(yellow("Entey key to encrypt file: "), []string{})
 	for _, note := range n.NoteMap {
-		line := note + "\n"
+		line := encrypt(note, keyword) + "\n"
 		if _, err := file.WriteString(line); err != nil {
 			return fmt.Errorf("failed to write to file: %w", err)
 		}
@@ -80,6 +92,7 @@ func (n *Notes) WriteToFile() error {
 }
 
 func (n *Notes) ReadFromFile() error {
+	yellow := color.New(color.FgYellow).SprintFunc()
 
 	filename := n.Collection + ".txt"
 	file, err := os.Open(filename)
@@ -97,13 +110,14 @@ func (n *Notes) ReadFromFile() error {
 	}
 	defer file.Close()
 
+	keyword := getInput(yellow("Entey key to decrypt file: "), []string{})
 	n.NoteMap = make(map[string]string)
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
 		key := fmt.Sprintf("%03d", len(n.NoteMap)+1)
-		n.NoteMap[key] = line
+		n.NoteMap[key] = decrypt(line, keyword)
 	}
 
 	if err := scanner.Err(); err != nil {

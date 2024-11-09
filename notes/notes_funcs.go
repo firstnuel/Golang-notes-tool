@@ -3,11 +3,20 @@ package notes
 import (
 	"fmt"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 func show_operations() {
-	fmt.Println("Select operation (1/2/3/4):")
-	fmt.Print("1. Show notes.\n2. Add a note.\n3. Delete a note.\n4. Exit.\n")
+	green := color.New(color.FgGreen).SprintFunc()
+
+	fmt.Println(green("Select operation (1/2/3/4):"))
+	fmt.Print(
+		green("1. Show notes.\n"),
+		green("2. Add a note.\n"),
+		green("3. Delete a note.\n"),
+		green("4. Exit.\n"),
+	)
 }
 
 func ValidateArgs(args []string) string {
@@ -22,12 +31,14 @@ func ValidateArgs(args []string) string {
 }
 
 func shouldContinue() bool {
-	toContinue := getInput("Perform another operation? (y/n): ", []string{"y", "n", "Y", "N"})
+	yellow := color.New(color.FgYellow).SprintFunc()
+	toContinue := getInput(yellow("Perform another operation? (y/n): "), []string{"y", "n", "Y", "N"})
 	return strings.ToLower(toContinue) == "y"
 }
 
 func Exit() {
-	fmt.Println()
-	fmt.Println("saving...")
-	fmt.Println("exited.... Thanks for using our groups Notes Tool.")
+	yellow := color.New(color.FgYellow).SprintFunc()
+	green := color.New(color.FgGreen).SprintFunc()
+	fmt.Println(yellow("\nsaving..."))
+	fmt.Println(green("exited.... \nThanks for using our groups Notes Tool."))
 }

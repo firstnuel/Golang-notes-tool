@@ -1,11 +1,14 @@
 package notes
 
 import (
-	"fmt"
 	"os"
+
+	"github.com/fatih/color"
 )
 
 func NotesTool() {
+	yellow := color.New(color.FgYellow).SprintFunc()
+
 	collectionName := ValidateArgs(os.Args)
 	if collectionName == "" {
 		return
@@ -13,11 +16,11 @@ func NotesTool() {
 	notesCollection := New(collectionName)
 	notesCollection.ReadFromFile()
 
-	fmt.Print("\nWelcome to the notes tool!\n\n")
+	color.Green("\nWelcome to the notes tool!\n\n")
 
 	for {
 		show_operations()
-		opChoice := getInput("Enter choice: ", []string{"1", "2", "3", "4"})
+		opChoice := getInput(yellow("Enter choice: "), []string{"1", "2", "3", "4"})
 
 		switch opChoice {
 		case "1":
