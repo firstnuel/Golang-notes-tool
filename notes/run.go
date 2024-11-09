@@ -10,7 +10,7 @@ func NotesTool() {
 	if collectionName == "" {
 		return
 	}
-	notesCollection := New((collectionName))
+	notesCollection := New(collectionName)
 	notesCollection.ReadFromFile()
 
 	fmt.Print("\nWelcome to the notes tool!\n\n")
