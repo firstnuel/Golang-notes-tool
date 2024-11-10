@@ -5,6 +5,16 @@ import (
 	"os"
 )
 
+const (
+	Reset  = "\033[0m"
+	Red    = "\033[31m"
+	Yellow = "\033[33m"
+)
+
+func YellowText(text string) string {
+	return Yellow + text + Reset
+}
+
 func NotesTool() {
 	collectionName := ValidateArgs(os.Args)
 	if collectionName == "" {
@@ -24,7 +34,7 @@ func NotesTool() {
 			notesCollection.ShowNotes()
 
 			if len(notesCollection.NoteMap) > 0 {
-				decryptChoice := getInput("Press 0 to decrypt your notes: ", []string{"0", ""})
+				decryptChoice := getInput(YellowText("Press 0 to decrypt your notes: "), []string{"0", ""})
 				if decryptChoice == "0" {
 					notesCollection.ShowDecryptedNotes()
 				}

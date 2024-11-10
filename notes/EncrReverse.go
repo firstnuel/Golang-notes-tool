@@ -1,7 +1,5 @@
 package notes
 
-//import "fmt"
-
 func EncReverse(note string) string {
 	var result string
 	
@@ -25,8 +23,3 @@ func EncReverse(note string) string {
 	}
 	return result
 }
-
-/*func main  () {
-	output := EncReverse("H elo!")
-	fmt.Println(output)
-}*/
