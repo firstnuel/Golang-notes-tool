@@ -7,10 +7,6 @@ import (
 	"strings"
 )
 
-func RedText(text string) string {
-	return Red + text + Reset
-}
-
 func getInput(prompt string, expected []string) string {
 	reader := bufio.NewReader(os.Stdin)
 
@@ -35,7 +31,7 @@ func getInput(prompt string, expected []string) string {
 		if includesString(expected, text) {
 			return text
 		}
-		fmt.Println(RedText("Invalid choice!"))
+		fmt.Println("Invalid choice!")
 	}
 }
 

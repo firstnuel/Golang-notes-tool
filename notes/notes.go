@@ -66,7 +66,7 @@ func (n *Notes) ShowNotes() {
 		fmt.Println(Yellow("No notes to show. Add a note first."))
 		return
 	}
-	fmt.Println("\nEncrypted Notes:")
+	fmt.Println("\nNotes:")
 	for key, value := range n.NoteMap {
 		fmt.Printf("%v - %v\n", key, value)
 	}
@@ -105,6 +105,7 @@ func (n *Notes) ReadFromFile() error {
 		}
 		file.Close()
 		return nil
+
 	} else if err != nil {
 		return fmt.Errorf("failed to open file: %w", err)
 	}
