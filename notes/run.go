@@ -22,6 +22,14 @@ func NotesTool() {
 		switch opChoice {
 		case "1":
 			notesCollection.ShowNotes()
+
+			if len(notesCollection.NoteMap) > 0 {
+				decryptChoice := getInput("Press 0 to decrypt your notes: ", []string{"0", ""})
+				if decryptChoice == "0" {
+					notesCollection.ShowDecryptedNotes()
+				}
+			}
+
 		case "2":
 			notesCollection.AddNote()
 		case "3":

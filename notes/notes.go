@@ -12,6 +12,7 @@ type Notes struct {
 	NoteMap    map[string]string
 }
 
+// New creates a new Notes instance
 func New(name string) *Notes {
 	return &Notes{
 		Collection: name,
@@ -19,28 +20,27 @@ func New(name string) *Notes {
 	}
 }
 
+// AddNote prompts the user for a note, encrypts it, and adds it to NoteMap
 func (n *Notes) AddNote() *Notes {
 	note := getInput("\nEnter the note text: ", []string{})
+	encryptedNote := EncReverse(note)
 
 	i := len(n.NoteMap)
 	key := fmt.Sprintf("%03d", i+1)
-	n.NoteMap[key] = note
-	fmt.Println("Note added successfully!")
+	n.NoteMap[key] = encryptedNote
+	fmt.Println("Note added and encrypted successfully!")
 	return n
 }
 
+// DeleteNote prompts the user for an index and deletes the corresponding note
 func (n *Notes) DeleteNote() *Notes {
 	index := getInput("\nEnter the index text (00X): ", []string{})
 
 	i := len(n.NoteMap)
 	idx, err := strconv.Atoi(index)
 
-	if err != nil {
+	if err != nil || idx > i || idx < 1 {
 		fmt.Println("Problem with index!")
-		return n
-	}
-	if idx > i {
-		fmt.Println("Note not found!")
 		return n
 	}
 
@@ -50,18 +50,32 @@ func (n *Notes) DeleteNote() *Notes {
 	return n
 }
 
+// ShowNotes displays the encrypted notes
 func (n *Notes) ShowNotes() {
-
 	if len(n.NoteMap) == 0 {
 		fmt.Println("No notes to show, Add note")
 		return
 	}
-	fmt.Println("\nNotes:")
+	fmt.Println("\nEncrypted Notes:")
 	for key, value := range n.NoteMap {
 		fmt.Printf("%v - %v\n", key, value)
 	}
 }
 
+// ShowDecryptedNotes displays decrypted notes by reversing the encryption
+func (n *Notes) ShowDecryptedNotes() {
+	if len(n.NoteMap) == 0 {
+		fmt.Println("No notes to show, Add note")
+		return
+	}
+	fmt.Println("\nDecrypted Notes:")
+	for key, value := range n.NoteMap {
+		decryptedNote := EncReverse(value) // Decrypt the note
+		fmt.Printf("%v - %v\n", key, decryptedNote)
+	}
+}
+
+// WriteToFile saves encrypted notes to a file
 func (n *Notes) WriteToFile() error {
 	filename := n.Collection + ".txt"
 	file, err := os.Create(filename)
@@ -71,7 +85,7 @@ func (n *Notes) WriteToFile() error {
 	defer file.Close()
 
 	for _, note := range n.NoteMap {
-		line := note + "\n"
+		line := note + "\n" // Already encrypted
 		if _, err := file.WriteString(line); err != nil {
 			return fmt.Errorf("failed to write to file: %w", err)
 		}
@@ -79,8 +93,8 @@ func (n *Notes) WriteToFile() error {
 	return nil
 }
 
+// ReadFromFile reads notes from a file, assuming they are encrypted
 func (n *Notes) ReadFromFile() error {
-
 	filename := n.Collection + ".txt"
 	file, err := os.Open(filename)
 
@@ -91,7 +105,6 @@ func (n *Notes) ReadFromFile() error {
 		}
 		file.Close()
 		return nil
-
 	} else if err != nil {
 		return fmt.Errorf("failed to open file: %w", err)
 	}
@@ -103,7 +116,7 @@ func (n *Notes) ReadFromFile() error {
 	for scanner.Scan() {
 		line := scanner.Text()
 		key := fmt.Sprintf("%03d", len(n.NoteMap)+1)
-		n.NoteMap[key] = line
+		n.NoteMap[key] = line // Load as encrypted
 	}
 
 	if err := scanner.Err(); err != nil {
