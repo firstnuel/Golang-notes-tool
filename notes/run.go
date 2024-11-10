@@ -16,6 +16,7 @@ func YellowText(text string) string {
 }
 
 func NotesTool() {
+
 	collectionName := ValidateArgs(os.Args)
 	if collectionName == "" {
 		return
@@ -23,11 +24,11 @@ func NotesTool() {
 	notesCollection := New(collectionName)
 	notesCollection.ReadFromFile()
 
-	fmt.Print("\nWelcome to the notes tool!\n\n")
+	fmt.Print(Green("\nWelcome to the notes tool!\n\n"))
 
 	for {
 		show_operations()
-		opChoice := getInput("Enter choice: ", []string{"1", "2", "3", "4"})
+		opChoice := getInput(Yellow("Enter choice: "), []string{"1", "2", "3", "4"})
 
 		switch opChoice {
 		case "1":

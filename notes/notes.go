@@ -12,7 +12,7 @@ type Notes struct {
 	NoteMap    map[string]string
 }
 
-// New creates a new Notes instance
+// New creates a new Notes instance with a specified collection name.
 func New(name string) *Notes {
 	return &Notes{
 		Collection: name,
@@ -20,40 +20,50 @@ func New(name string) *Notes {
 	}
 }
 
-// AddNote prompts the user for a note, encrypts it, and adds it to NoteMap
+// AddNote prompts the user to enter a note and adds it to the Notes instance.
 func (n *Notes) AddNote() *Notes {
 	note := getInput("\nEnter the note text: ", []string{})
-	encryptedNote := EncReverse(note)
-
+	// Generates a new key based on the current number of notes.
 	i := len(n.NoteMap)
 	key := fmt.Sprintf("%03d", i+1)
-	n.NoteMap[key] = encryptedNote
-	fmt.Println("Note added and encrypted successfully!")
+	n.NoteMap[key] = note
+	fmt.Println(Green("Note added successfully!"))
 	return n
 }
 
-// DeleteNote prompts the user for an index and deletes the corresponding note
+// DeleteNote prompts the user for a note index and deletes the corresponding note if it exists.
 func (n *Notes) DeleteNote() *Notes {
-	index := getInput("\nEnter the index text (00X): ", []string{})
-
+	index := getInput(Red("\nEnter the number of note to remove or 0 to cancel: "), []string{})
+	if index == "0" {
+		fmt.Println(Yellow("Delete operation cancelled"))
+		return n
+	}
 	i := len(n.NoteMap)
 	idx, err := strconv.Atoi(index)
 
-	if err != nil || idx > i || idx < 1 {
-		fmt.Println("Problem with index!")
+	if err != nil {
+		fmt.Println(Red("Invalid index format!"))
 		return n
 	}
-
+	if idx > i {
+		fmt.Println(Red("Note not found!"))
+		return n
+	}
 	key := fmt.Sprintf("%03d", idx)
-	delete(n.NoteMap, key)
-	fmt.Println("Note deleted successfully!")
+	// Checks if the note exists before attempting to delete.
+	if _, exists := n.NoteMap[key]; exists {
+		delete(n.NoteMap, key)
+		fmt.Println(Green("Note deleted successfully!"))
+		return n
+	}
+	fmt.Println(Red("Note not found, invalid key!"))
 	return n
 }
 
-// ShowNotes displays the encrypted notes
+// ShowNotes displays all notes in the Notes instance.
 func (n *Notes) ShowNotes() {
 	if len(n.NoteMap) == 0 {
-		fmt.Println("No notes to show, Add note")
+		fmt.Println(Yellow("No notes to show. Add a note first."))
 		return
 	}
 	fmt.Println("\nEncrypted Notes:")
@@ -62,30 +72,18 @@ func (n *Notes) ShowNotes() {
 	}
 }
 
-// ShowDecryptedNotes displays decrypted notes by reversing the encryption
-func (n *Notes) ShowDecryptedNotes() {
-	if len(n.NoteMap) == 0 {
-		fmt.Println("No notes to show, Add note")
-		return
-	}
-	fmt.Println("\nDecrypted Notes:")
-	for key, value := range n.NoteMap {
-		decryptedNote := EncReverse(value) // Decrypt the note
-		fmt.Printf("%v - %v\n", key, decryptedNote)
-	}
-}
-
-// WriteToFile saves encrypted notes to a file
+// WriteToFile encrypts and saves notes to a file using the provided encryption key.
 func (n *Notes) WriteToFile() error {
-	filename := n.Collection + ".txt"
+	filename := n.Collection + ".txt" // Collection name as filename
 	file, err := os.Create(filename)
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
 	defer file.Close()
 
+	keyword := getInput(Yellow("Enter key to encrypt file: "), []string{})
 	for _, note := range n.NoteMap {
-		line := note + "\n" // Already encrypted
+		line := encrypt(note, keyword) + "\n" // Encrypts each line
 		if _, err := file.WriteString(line); err != nil {
 			return fmt.Errorf("failed to write to file: %w", err)
 		}
@@ -93,12 +91,14 @@ func (n *Notes) WriteToFile() error {
 	return nil
 }
 
-// ReadFromFile reads notes from a file, assuming they are encrypted
+// ReadFromFile reads and decrypts notes from a file using the provided decryption key.
+// Incorrect key usage will result in improperly decrypted notes.
 func (n *Notes) ReadFromFile() error {
-	filename := n.Collection + ".txt"
+	filename := n.Collection + ".txt" // Collection name as filename
 	file, err := os.Open(filename)
 
 	if os.IsNotExist(err) {
+		// Creates the file if it doesn't exist
 		file, err = os.Create(filename)
 		if err != nil {
 			return fmt.Errorf("failed to create file: %w", err)
@@ -110,13 +110,14 @@ func (n *Notes) ReadFromFile() error {
 	}
 	defer file.Close()
 
+	keyword := getInput(Yellow("Enter key to decrypt file: "), []string{})
 	n.NoteMap = make(map[string]string)
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
 		key := fmt.Sprintf("%03d", len(n.NoteMap)+1)
-		n.NoteMap[key] = line // Load as encrypted
+		n.NoteMap[key] = decrypt(line, keyword)
 	}
 
 	if err := scanner.Err(); err != nil {
