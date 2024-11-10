@@ -3,22 +3,42 @@ package notes
 import (
 	"fmt"
 	"strings"
-
-	"github.com/fatih/color"
 )
 
-func show_operations() {
-	green := color.New(color.FgGreen).SprintFunc()
+const (
+	Reset  = "\033[0m"
+	red    = "\033[31m"
+	green  = "\033[32m"
+	yellow = "\033[33m"
+)
 
-	fmt.Println(green("Select operation (1/2/3/4):"))
+// Green formats the text in green.
+func Green(text string) string {
+	return fmt.Sprintf("%s%s%s", green, text, Reset)
+}
+
+// Red formats the text in red.
+func Red(text string) string {
+	return fmt.Sprintf("%s%s%s", red, text, Reset)
+}
+
+// Yellow formats the text in yellow.
+func Yellow(text string) string {
+	return fmt.Sprintf("%s%s%s", yellow, text, Reset)
+}
+
+// Prints out operations
+func show_operations() {
+	fmt.Println(Green("Select operation (1/2/3/4):"))
 	fmt.Print(
-		green("1. Show notes.\n"),
-		green("2. Add a note.\n"),
-		green("3. Delete a note.\n"),
-		green("4. Exit.\n"),
+		Green("1. Show notes.\n"),
+		Green("2. Add a note.\n"),
+		Green("3. Delete a note.\n"),
+		Green("4. Exit.\n"),
 	)
 }
 
+// Validates if the program is executed correctly
 func ValidateArgs(args []string) string {
 	if len(args) < 2 {
 		fmt.Println("Usage: ./notes-tool [TAG]")
@@ -31,14 +51,11 @@ func ValidateArgs(args []string) string {
 }
 
 func shouldContinue() bool {
-	yellow := color.New(color.FgYellow).SprintFunc()
-	toContinue := getInput(yellow("Perform another operation? (y/n): "), []string{"y", "n", "Y", "N"})
+	toContinue := getInput(Yellow("Perform another operation? (y/n): "), []string{"y", "n", "Y", "N"})
 	return strings.ToLower(toContinue) == "y"
 }
 
 func Exit() {
-	yellow := color.New(color.FgYellow).SprintFunc()
-	green := color.New(color.FgGreen).SprintFunc()
-	fmt.Println(yellow("\nsaving..."))
-	fmt.Println(green("exited.... \nThanks for using our groups Notes Tool."))
+	fmt.Println(Yellow("\nsaving..."))
+	fmt.Println(Green("exited.... \nThanks for using our groups Notes Tool."))
 }
