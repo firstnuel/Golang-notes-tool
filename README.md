@@ -88,6 +88,14 @@ The Notes Tool is a command-line interface (CLI) application written in Go for m
     Thanks for using our groups Notes Tool.
     ````
 
+## Explanation of How Data is Stored
+The Notes Tool stores all notes in memory using a map (key-value pair). Each note is assigned a unique key, formatted as a three-digit number (e.g., 001, 002, etc.), and the note text is stored as the value.
+
+When you exit the notes tool, the tool writes the notes to a file named after the collection (e.g., demo.txt). The notes are encrypted using the Vigenère cipher before being written to the file. This means that even if someone gains access to the file, they won't be able to read the notes without the correct decryption key.
+
+When you run the tool, it will first check to load the notes from the file. If the file does not exist, it will create a new one with the collection name. If the file exists, the program will ask for the decryption key, and the notes will be decrypted using the same Vigenère cipher algorithm.
+
+
 ## File Encryption and Decryption
 The Notes Tool offers simple encryption and decryption using a keyword to secure notes stored in a file.
 
