@@ -52,10 +52,13 @@ func (n *Notes) DeleteNote() *Notes {
 		color.Red("Note not found!")
 		return n
 	}
-
 	key := fmt.Sprintf("%03d", idx)
-	delete(n.NoteMap, key)
-	color.Green("Note deleted successfully!")
+	if _, exists := n.NoteMap[key]; exists {
+		delete(n.NoteMap, key)
+		color.Green("Note deleted successfully!")
+		return n
+	}
+	color.Red("Note note found, Invalid key!")
 	return n
 }
 
