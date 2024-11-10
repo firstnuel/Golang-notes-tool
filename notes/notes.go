@@ -32,12 +32,11 @@ func (n *Notes) AddNote() *Notes {
 }
 
 func (n *Notes) DeleteNote() *Notes {
-	yellow := color.New(color.FgYellow).SprintFunc()
 	red := color.New(color.FgRed).SprintFunc()
 
 	index := getInput(red("\nEnter the number of note to remove or 0 to cancel: "), []string{})
-	fmt.Println(yellow("Delete operation cancelled"))
 	if index == "0" {
+		color.Yellow("Delete operation cancelled")
 		return n
 	}
 
