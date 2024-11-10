@@ -42,7 +42,7 @@ The Notes Tool is a command-line interface (CLI) application written in Go for m
     - `4` Exit: Save notes to file and exit.
 
 ## Example Interaction
-    ````
+
     % ./notes-tool demo
 
     Welcome to the notes tool!
@@ -86,7 +86,7 @@ The Notes Tool is a command-line interface (CLI) application written in Go for m
     saving...
     exited.... 
     Thanks for using our groups Notes Tool.
-    ````
+
 
 ## Explanation of How Data is Stored
 The Notes Tool stores all notes in memory using a map (key-value pair). Each note is assigned a unique key, formatted as a three-digit number (e.g., 001, 002, etc.), and the note text is stored as the value.
